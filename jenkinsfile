@@ -1,0 +1,42 @@
+pipeline{
+    agent any;
+    stages{
+        stage("code clone"){
+           steps{
+               git url:"https://github.com/sha620/flask-app-ecs.git", branch:"main"
+           } 
+        }
+        stage("code build"){
+            steps{
+                sh "docker build -t python-app:latest ."
+            }
+        }
+        stage("code test"){
+            steps{
+                echo "t"
+            }
+            
+        }
+        stage("code push to docker hub"){
+            steps{
+                withCredentials([usernamePassword(
+                    credentialsId:"Dockerhubcred",
+                    usernameVariable:"user",
+                    passwordVariable:"pass"
+                    )]){
+                sh "docker login -u ${env.user} -p ${env.pass}"
+                sh "docker image tag python-app:latest ${env.user}/python-app:latest"
+                sh "docker push ${env.user}/python-app:latest" 
+                    }
+            }
+        }
+        stage("deploy"){
+            steps{
+                sh "docker stop python && docker rm python"
+                sh "docker run -d -p 81:80 --name python python-app:latest"
+            }
+            
+        }
+    }
+        
+}
