@@ -1,42 +1,40 @@
 pipeline{
     agent any;
     stages{
-        stage("code clone"){
-           steps{
-               git url:"https://github.com/sha620/flask-app-ecs.git", branch:"main"
-           } 
+        stage("clone"){
+          steps{
+              git url: "https://github.com/sha620/flask-app-ecs.git",branch:"main"
+          }  
         }
-        stage("code build"){
+        stage("buil"){
+         steps{
+             sh "docker build -f ./Dockerfile-multi -t multi:la ."
+         }   
+        }
+        stage("test"){
             steps{
-                sh "docker build -t python-app:latest ."
+            echo "test"    
             }
         }
-        stage("code test"){
+        stage("push to dokerhub"){
             steps{
-                echo "t"
+            withCredentials([usernamePassword(
+            credentialsId:"Dockerhubcred",
+            usernameVariable:"user",
+            passwordVariable:"pass"
+                )]){
+            sh "docker login -u ${env.user} -p ${env.pass}"
+            sh "docker image tag multi:la ${env.user}/multi:la"
+            sh "docker push ${env.user}/multi:la"
+                }
             }
             
         }
-        stage("code push to docker hub"){
-            steps{
-                withCredentials([usernamePassword(
-                    credentialsId:"Dockerhubcred",
-                    usernameVariable:"user",
-                    passwordVariable:"pass"
-                    )]){
-                sh "docker login -u ${env.user} -p ${env.pass}"
-                sh "docker image tag python-app:latest ${env.user}/python-app:latest"
-                sh "docker push ${env.user}/python-app:latest" 
-                    }
-            }
-        }
         stage("deploy"){
             steps{
-                sh "docker stop python && docker rm python"
-                sh "docker run -d -p 81:80 --name python python-app:latest"
+                sh "docker run -d -p 80:80  multi:la"
             }
             
         }
     }
-        
 }
