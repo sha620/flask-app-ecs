@@ -8,8 +8,7 @@ pipeline{
         }
         stage(build){
             steps{
-                sh "docker build -f ./Dockerfile-multi -t app:ll ."
-
+                sh "docker build -f ./Dockerfile-multi -t py-app:ll ."
             }
         }
         stage(test){
@@ -19,22 +18,21 @@ pipeline{
         }
         stage(push){
             steps{
-                echo "push"
+                withCredentials([usernamePassword(
+                credentialsId: "vic",
+                usernameVariable: "user",
+                passwordVariable: "pass"
+                )]){
+                    sh "docker login -u ${env.user} -p ${env.pass}"
+                    sh "docker image tag py-app:ll ${env.user}/py-app:ll"
+                    sh "docker push ${env.user}/py-app:ll"
+                }
             }
         }
         stage(deploy){
             steps{
-                withCredentials([usernamePassword(
-                    credentialsId: "singh",
-                    usernameVariable: "user",
-                    passwordVariable: "pass"
-                    )]){
-                        sh "docker login -u ${env.user} -p ${env.pass}"
-                        sh "docker image tag app:ll ${env.user}/app:ll"
-                        sh "docker push ${env.user}/app:ll"
-                    }
+                sh "docker run -d py-app:ll"
             }
         }
     }
-    
 }
