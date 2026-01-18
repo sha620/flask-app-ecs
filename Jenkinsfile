@@ -1,9 +1,9 @@
-pipeline{
+pipeline {
     agent any;
-    stages{
+    stages(){
         stage(clone){
             steps{
-                git url: "https://github.com/sha620/flask-app-ecs.git",branch: "main"
+                git url: "https://github.com/sha620/flask-app-ecs", branch: "main"
             }
         }
         stage(build){
@@ -19,7 +19,7 @@ pipeline{
         stage(push){
             steps{
                 withCredentials([usernamePassword(
-                    credentialsId: "singh",
+                    credentialsId: "new",
                     usernameVariable: "user",
                     passwordVariable: "pass"
                     )]){
@@ -29,9 +29,9 @@ pipeline{
                     }
             }
         }
-        stage(deploy){
+        stage(deply){
             steps{
-                sh " docker run -d py-app:ll"
+                sh "docker run -d py-app:ll"
             }
         }
     }
