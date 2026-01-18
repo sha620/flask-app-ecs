@@ -1,5 +1,5 @@
 # flask-app-ecs
-Simple flask app to be run on ECSmmmmmmml
+Simple flask app to be run on ECSmmmmmmmllll
 
 king 
 
