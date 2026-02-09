@@ -1,14 +1,14 @@
 pipeline{
     agent any;
     stages{
-        stage(clone){
+        stage(code){
             steps{
-                git url: "https://github.com/sha620/flask-app-ecs.git", branch: "main"
+                git url: "https://github.com/sha620/flask-app-ecs.git",branch: "main"
             }
         }
         stage(build){
             steps{
-                sh " docker build -f ./Dockerfile-multi -t py-app:ll ."
+                sh "docker build -f ./Dockerfile-multi -t py-app:ll ."
             }
         }
         stage(test){
@@ -19,14 +19,13 @@ pipeline{
         stage(push){
             steps{
                 withCredentials([usernamePassword(
-                    credentialsId: "shakti",
+                    credentialsId: "singh",
                     usernameVariable: "user",
                     passwordVariable: "pass"
-                    
                     )]){
-                        sh " docker login -u ${env.user} -p ${env.pass}"
+                        sh "docker login -u ${env.user} -p ${env.pass}"
                         sh "docker image tag py-app:ll ${env.user}/py-app:ll"
-                        sh "docker push ${env.user}/py-app:ll"
+                        sh "docker push ${env.user}/py-app:ll" 
                     }
             }
         }
@@ -36,5 +35,4 @@ pipeline{
             }
         }
     }
-    
 }
