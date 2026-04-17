@@ -1,9 +1,9 @@
 pipeline{
     agent any;
-    stages(){
+    stages{
         stage(clone){
             steps{
-                git url: "https://github.com/sha620/flask-app-ecs.git", branch: "main"
+                git url: "https://github.com/sha620/flask-app-ecs.git",branch: "main"
             }
         }
         stage(build){
@@ -19,20 +19,20 @@ pipeline{
         stage(push){
             steps{
                 withCredentials([usernamePassword(
-                    credentialsId: "ladu",
+                    credentialsId: "shakti",
                     usernameVariable: "user",
                     passwordVariable: "pass"
+                    
                     )]) {
                         sh " docker login -u ${env.user} -p ${env.pass}"
-                        sh "docker image tag py-app:ll ${env.user}/py-app:ll"
+                        sh " docker image tag py-app:ll ${env.user}/py-app:ll"
                         sh " docker push ${env.user}/py-app:ll"
                     }
             }
         }
-        
         stage(deploy){
             steps{
-                sh " docker run -d py-app:ll"
+                sh " docker run -d shasin1/py-app:ll"
             }
         }
     }
