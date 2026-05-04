@@ -1,5 +1,5 @@
 kk# flask-app-ecssingh
-Simple flaskmmm app to be run on ECSmmmmmmmllllllll
+Simple flaskmmm app to be mmmrun on ECSmmmmmmmllllllll
 mm
 king 
 
