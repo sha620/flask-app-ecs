@@ -1,20 +1,31 @@
-pipeline {
+pipeline{
     agent any;
     stages{
         stage(clone){
             steps{
-                git url: "https://github.com/sha620/flask-app-ecs.git", branch: "main"
+              git url: "https://github.com/sha620/flask-app-ecs.git",branch: "main"
+
             }
         }
         stage(build){
             steps{
-                sh " docker build -f ./Dockerfile-multi -t py:ll ."
+                sh "docker build -f ./Dockerfile-multi -t py:ll ."
+            }
+            
+        } 
+        stage(test){
+            parallel { 
+                stage(test){
+                    steps{
+                        echo "test"
             }
         }
-        stage(test){
+        stage(test1){
             steps{
-                echo "test"
+                echo "test1"
             }
+        }
+       }
         }
         stage(push){
             steps{
@@ -26,7 +37,7 @@ pipeline {
                     )]) {
                         sh " docker login -u ${env.user} -p ${env.pass}"
                         sh " docker image tag py:ll ${env.user}/py:ll"
-                        sh "docker push ${env.user}/py:ll"
+                        sh " docker push ${env.user}/py:ll"
                     }
             }
         }
