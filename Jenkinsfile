@@ -1,31 +1,36 @@
-pipeline{
+pipeline {
     agent any;
-    stages{
+    stages {
         stage(clone){
-            steps{
-              git url: "https://github.com/sha620/flask-app-ecs.git",branch: "main"
-
+            steps {
+                git url : "https://github.com/sha620/flask-app-ecs.git", branch: "main"
             }
+        }
+            stage(parallel) {
+                parallel {
+                    stage(testone){
+                        steps{
+                            echo " iam king"
+                        }
+                    }
+                    stage(testtwo){
+                        steps{
+                            echo " iam ping"
+                        }
+                    }
+                    
+                }
+            
         }
         stage(build){
-            steps{
-                sh "docker build -f ./Dockerfile-multi -t py:ll ."
+            steps {
+                sh "docker build -f ./Dockerfile-multi -t py-app:ll ."
             }
-            
-        } 
+        }
         stage(test){
-            parallel { 
-                stage(test){
-                    steps{
-                        echo "test"
-            }
-        }
-        stage(test1){
             steps{
-                echo "test1"
+                echo "test"
             }
-        }
-       }
         }
         stage(push){
             steps{
@@ -34,17 +39,19 @@ pipeline{
                     usernameVariable: "user",
                     passwordVariable: "pass"
                     
+                    
                     )]) {
                         sh " docker login -u ${env.user} -p ${env.pass}"
-                        sh " docker image tag py:ll ${env.user}/py:ll"
-                        sh " docker push ${env.user}/py:ll"
+                        sh " docker image tag py-app:ll ${env.user}/py-app:ll"
+                        sh " docker push ${env.user}/py-app:ll"
                     }
             }
         }
         stage(deploy){
             steps{
-                sh " docker run -d py:ll"
+                sh " docker run -d py-app:ll"
             }
         }
     }
+    
 }
